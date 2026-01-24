@@ -1,0 +1,27 @@
+# --- Environnement Virtuel & Dépendances ---
+.venv/
+.pytest_cache/
+__pycache__/
+
+# --- Fichiers de Configuration Sensibles ---
+.env
+
+# --- Fichiers de Données (Générés par le pipeline) ---
+# On ignore tout le contenu du dossier data, mais on garde le dossier vide
+data/*
+!data/.gitkeep
+
+# --- Fichiers de Logs & Backups (Volatils) ---
+logs/
+data/backup/
+data/summary/
+
+# --- Dossiers d'Expérimentation & Temporaires ---
+notebooks/
+sandbox/
+temp/
+
+# --- Fichiers IDE / OS ---
+.vscode/
+.idea/
+.DS_Store
