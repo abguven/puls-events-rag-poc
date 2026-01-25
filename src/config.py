@@ -5,10 +5,11 @@
 LLM_MODEL_NAME = "mistral-large-latest"
 MODEL_TEMPERATURE=0.5
 
+
 # 2. Gestion de la Mémoire
 # True : Le bot se souvient des messages précédents
 # False : Le bot oublie tout à chaque question (Mode Amnésique / Test unitaire)
-ENABLE_MEMORY = True
+ENABLE_MEMORY = False
 
 # 3. Paramètres de Recherche
 SEARCH_K = 3000  # Nombre de candidats FAISS avant filtrage

@@ -53,15 +53,16 @@ def search_events(query: str, date_start: str = None, date_end: str = None, pric
         
     logger.info(f"🔎 RECHERCHE : Sujet='{query}' | Date={log_date} | Prix={price_type} | CP={zipcode}")
     
-    # 1. Recherche Large (k=500) pour avoir de la matière à filtrer
-    results = vectorstore.similarity_search(query, k=SEARCH_K)
+    # Recherche Large (k=3000) pour avoir de la matière à filtrer
+    results_with_scores  = vectorstore.similarity_search_with_score(query, k=SEARCH_K)
     
     filtered_docs = []
     
-    # 2. Filtrage Python STRICT
-    for doc in results:
+    # Filtrage Python STRICT
+    for doc, score in results_with_scores:
+                
         meta = doc.metadata
-        keep = True                
+        keep = True
 
         # Filtre DATE (Période ou Singleton)
         if date_start:
@@ -94,16 +95,23 @@ def search_events(query: str, date_start: str = None, date_end: str = None, pric
             meta_zip = str(meta.get('zipcode', ''))
             if zipcode not in meta_zip:
                 keep = False
-        
-        # Tri par date croissante si l'utilisateur a précisé une date
-        if date_start:
-            filtered_docs.sort(key=lambda x: str(x.metadata.get('start_date', '')))
-        
+                        
         if keep:
-            filtered_docs.append(doc)
+            filtered_docs.append((doc, score))
             
-    # 3. Sélection Finale
-    final_docs = filtered_docs[:SEARCH_RESULTS] # On garde le top N filtré
+    # Tri par date croissante si l'utilisateur a précisé une date
+    if date_start:
+        # Tri par Date (Priorité 1) puis par Score (Priorité 2)
+        # x[0] est le doc, x[1] est le score
+        filtered_docs.sort(key=lambda x: (str(x[0].metadata.get('start_date', '')), x[1]))
+    else:
+        # Tri par Score uniquement (Pertinence)
+        filtered_docs.sort(key=lambda x: x[1])
+        
+            
+    # Sélection Finale
+    # final_docs = filtered_docs[:SEARCH_RESULTS] # On garde le top N filtré
+    final_docs = [doc for doc, score in filtered_docs[:SEARCH_RESULTS]]
     
     response_text = ""
     if not final_docs:
@@ -111,7 +119,7 @@ def search_events(query: str, date_start: str = None, date_end: str = None, pric
         logger.warning(f"⚠️ {response_text}") 
         return response_text
 
-    # 4. Formatage de la réponse pour l'agent
+    # Formatage de la réponse pour l'agent
     response_text = f"Trouvé {len(final_docs)} événements correspondants :\n"
     for doc in final_docs:
         response_text += f"---\n{doc.page_content}\n"
@@ -146,7 +154,7 @@ class RAGAgent:
 
             ÉTAPE 2 : RECHERCHE D'ÉVÉNEMENTS
             Utilise l'outil 'search_events' avec les paramètres extraits :
-            - query : Mots-clés (ex: 'Concert Jazz').
+            - query : Mots-clés (ex: 'Concert Jazz'). ATTENTION : NE PAS INCLURE le nom de la ville ou du quartier dans ce paramètre.
             - date_start / date_end : Les dates ISO exactes obtenues à l'étape 1 (ou celle donnée explicitement).
             - price_type : 'gratuit' uniquement si demandé.
             - zipcode : Code postal si un quartier est cité.

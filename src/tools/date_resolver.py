@@ -13,31 +13,43 @@ DATE_SYSTEM_PROMPT = """Tu es un expert en extraction de dates temporelles.
 ENTRÉE : Une expression temporelle
 DATE DE RÉFÉRENCE (AUJOURD'HUI) : {date_ref}
 
-OBJECTIF : Convertir l'expression en JSON.
+OBJECTIF : Convertir l'expression en JSON au format YYYY-MM-DD.
 
-RÈGLES DE LOGIQUE TEMPORELLE (CRITIQUE) :
-1.  **VERS LE FUTUR UNIQUEMENT** :
-    - Si une date fixe (ex: "le 5 janvier", "Noël", "le nouvel an") est DÉJÀ PASSÉE par rapport à la date de référence, c'est obligatoirement l'année suivante (+1 an).
-    - Exemple : Si on est le 13 janvier et qu'on dit "le 2 janvier", c'est le 2 janvier de l'année D'APRÈS.
+RÈGLES DE LOGIQUE TEMPORELLE :
+1.  **ANNÉE** :
+    - Par défaut, utilise l'année de la DATE DE RÉFÉRENCE.
+    - Ajoute +1 an UNIQUEMENT si le mois/jour demandé est strictement ANTERIEUR à la date de référence.
 
-2.  **SINGLETON vs PÉRIODE** :
-    - "fin [mois]", "fin janvier", "le 20", "demain" → Retourne {{"date": "..."}} (Le dernier jour ou le jour précis).
-    - "le mois de...", "semaine prochaine", "ce weekend" → Retourne {{"debut": "...", "fin": "..."}}.
+2.  **WEEK-END** :
+    - Si on est Lundi, Mardi, Mercredi, Jeudi -> "ce week-end" = Samedi/Dimanche à venir.
+    - Si on est Vendredi, Samedi, Dimanche -> "ce week-end" = Période restante jusqu'à Dimanche soir inclus.
 
-3.  **CALENDRIER** :
-    - Gère correctement les années bissextiles pour février (28 ou 29 jours).
-    - Semaine : Lundi au Dimanche.
+3.  **SINGLETON vs PÉRIODE** :
+    - "fin [mois]", "demain", "le 12" → {{"date": "..."}}.
+    - "en [mois]", "semaine prochaine" → {{"debut": "...", "fin": "..."}}.
 
 FORMAT DE SORTIE (JSON PUR) :
 - Cas date unique : {{"date": "YYYY-MM-DD"}}
 - Cas période : {{"debut": "YYYY-MM-DD", "fin": "YYYY-MM-DD"}}
 
-EXEMPLES (Avec Ref: 2026-06-15) :
-- "le 10 juin" -> {{"date": "2027-06-10"}} (Car 10 juin est passé)
-- "fin juillet" -> {{"date": "2026-07-31"}}
-- "juillet" -> {{"debut": "2026-07-01", "fin": "2026-07-31"}}
-"""
+---
+EXEMPLES DE LOGIQUE (Avec une date de référence fictive au 20 Mai 2024) :
 
+Exemple 1 (Dans le futur proche, même année) :
+Entrée : "Le 14 juillet"
+Réponse : {{"date": "2024-07-14"}}
+(Raisonnement : Juillet est après Mai, donc on reste en 2024)
+
+Exemple 2 (Date passée, année suivante) :
+Entrée : "Le 1er janvier"
+Réponse : {{"date": "2025-01-01"}}
+(Raisonnement : Janvier est avant Mai, donc c'est pour l'année d'après)
+
+Exemple 3 (Relatif) :
+Entrée : "vendredi prochain"
+Réponse : {{"date": "2024-05-24"}}
+---
+"""
 
 @tool
 def resolve_date_expression(expression: str):
