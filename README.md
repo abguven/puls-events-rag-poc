@@ -1,5 +1,7 @@
 # 🗼 Puls-Events : Assistant de Recommandation d'Événements (POC)
 
+![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white) ![LangChain](https://img.shields.io/badge/LangChain-Agents-1C3C3C?logo=langchain&logoColor=white) ![Mistral AI](https://img.shields.io/badge/Mistral_AI-mistral--large-FF7000?logo=mistral&logoColor=white) ![Faiss](https://img.shields.io/badge/Faiss-CPU-4285F4?logo=meta&logoColor=white) ![Streamlit](https://img.shields.io/badge/Streamlit-Demo-FF4B4B?logo=streamlit&logoColor=white) ![Poetry](https://img.shields.io/badge/Poetry-géré-60A5FA?logo=poetry&logoColor=white) [![Rapport Technique](https://img.shields.io/badge/Rapport-Technique-orange?logo=readthedocs&logoColor=white)](docs/doc_technique.md)
+
 Ce projet est un Proof of Concept (POC) d'un chatbot intelligent pour la recommandation d'événements culturels à Paris, basé sur une architecture RAG (Retrieval-Augmented Generation) "Agentique".
 
 ## 🎯 Objectifs
@@ -13,7 +15,7 @@ L'objectif est de créer un agent conversationnel capable de :
 
 Pour comprendre les choix d'architecture, le fonctionnement de l'agent et les limites du système, consultez le rapport technique complet :
 
-📄 **[Lire le Rapport Technique](docs/rapport_technique.md)**
+📄 **[Lire le Rapport Technique](docs/doc_technique.md)**
 
 ## 🛠️ Stack Technique
 
