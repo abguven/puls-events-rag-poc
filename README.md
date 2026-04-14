@@ -73,3 +73,11 @@ Pour comprendre les choix d'architecture, le fonctionnement de l'agent et les li
 -   `data/`: Données (ignorées par git, générées par le pipeline).
 -   `docs/`: Documentation et Rapport Technique.
 -   `tests/`: Tests unitaires de qualité et d'intégrité.
+
+## 🎬 Démo
+
+▶️ [Voir la vidéo de démonstration](https://www.youtube.com/watch?v=qg4xT153TEM)
+
+## 🙏 Crédits
+
+- Icônes : [Chatbot icons created by lakonicon - Flaticon](https://www.flaticon.com/free-icons/chatbot)
